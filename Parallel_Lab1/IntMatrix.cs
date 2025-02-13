@@ -56,4 +56,37 @@ public class IntMatrix
             }
         }
     }
+    
+    public void CalculateCParallel(IntMatrix A, IntMatrix B, int k, int threadsAmount)
+    {
+        // Divide the rows
+        int rowsPerThread = _rows / threadsAmount;
+        Thread[] threads = new Thread[threadsAmount];
+        
+        // Start threads
+        for (int t = 0; t < threadsAmount; t++)
+        {
+            int start = rowsPerThread * t;
+            int finish = (t == threadsAmount - 1) ? _rows : start + rowsPerThread;
+            
+            threads[t] = new Thread(() =>
+            {
+                for (int i = start; i < finish; i++)
+                {
+                    for (int j = 0; j < _columns; j++)
+                    {
+                        matrix[i][j] = A.matrix[i][j] - k * B.matrix[i][j];
+                    }
+                }
+            });
+
+            threads[t].Start();
+        }
+        
+        // Wait for threads
+        foreach (var thread in threads)
+        {
+            thread.Join();
+        }
+    }
 }

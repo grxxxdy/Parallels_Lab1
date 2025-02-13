@@ -18,7 +18,7 @@ class Program
         Stopwatch stopwatch = new Stopwatch();
         stopwatch.Start();
 
-        C.CalculateC(A, B, k);
+        C.CalculateCParallel(A, B, k, 6);
 
         stopwatch.Stop();
         Console.WriteLine($"Rows: {rows}\tColumns: {columns}\nTime elapsed: {stopwatch.ElapsedMilliseconds} ms\n");
