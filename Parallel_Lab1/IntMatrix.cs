@@ -31,6 +31,42 @@ public class IntMatrix
         }
     }
 
+    public void FillWithRandsParallel(int threadsAmount)
+    {
+        ThreadLocal<Random> rand = new ThreadLocal<Random>(() => new Random(Guid.NewGuid().GetHashCode()));
+        
+        // Divide the rows
+        int rowsPerThread = _rows / threadsAmount;
+        Thread[] threads = new Thread[threadsAmount];
+        
+        // Start threads
+        for (int t = 0; t < threadsAmount; t++)
+        {
+            int start = rowsPerThread * t;
+            int finish = (t == threadsAmount - 1) ? _rows : start + rowsPerThread;
+            
+            threads[t] = new Thread(() =>
+            {
+                var rnd = rand.Value;
+                for (int i = start; i < finish; i++)
+                {
+                    for (int j = 0; j < _columns; j++)
+                    {
+                        matrix[i][j] = rnd.Next(1, 1001);
+                    }
+                }
+            });
+
+            threads[t].Start();
+        }
+        
+        // Wait for threads
+        foreach (var thread in threads)
+        {
+            thread.Join();
+        }
+    }
+
     public void PrintMatrix()
     {
         for (int i = 0; i < _rows; i++)
